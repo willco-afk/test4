@@ -35,7 +35,7 @@
     <script>
         const hfToken = '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';  // Your Hugging Face API token
 
-        function analyzeSentiment() {
+        async function analyzeSentiment() {
             const review = document.getElementById('reviewText').value.trim();  // Get the review text
 
             // Clear previous results
@@ -50,36 +50,37 @@
                 return;
             }
 
-            // Set up request headers with Hugging Face token
-            const headers = {
-                'Authorization': `Bearer ${hfToken}`,
-            };
+            try {
+                // Set up request headers with Hugging Face token
+                const headers = {
+                    'Authorization': `Bearer ${hfToken}`,
+                };
 
-            // Hugging Face API URL for sentiment analysis
-            const sentimentApiUrl = "https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english";
-            
-            // Make the API request
-            axios.post(sentimentApiUrl, { inputs: review }, { headers })
-                .then(response => {
-                    const sentiment = response.data[0].label;
-                    const score = response.data[0].score;
+                // Hugging Face API URL for sentiment analysis
+                const sentimentApiUrl = "https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english";
+                
+                // Make the API request using axios
+                const response = await axios.post(sentimentApiUrl, { inputs: review }, { headers });
 
-                    // Hide loading and show result
-                    document.getElementById('loading').classList.add('hidden');
-                    
-                    // Display the result with color coding
-                    let sentimentColor = sentiment === 'POSITIVE' ? 'text-green-600' : 'text-red-600';
-                    document.getElementById('result').innerHTML = 
-                        `<p class="${sentimentColor} text-2xl">Sentiment: <strong>${sentiment}</strong></p>
-                         <p class="text-lg">Confidence: <strong>${(score * 100).toFixed(2)}%</strong></p>`;
-                })
-                .catch(error => {
-                    // Hide loading and show error message
-                    document.getElementById('loading').classList.add('hidden');
-                    document.getElementById('errorMessage').classList.remove('hidden');
-                    document.getElementById('errorMessage').innerText = "Error: Could not analyze the sentiment.";
-                    console.error(error);
-                });
+                // Extract the sentiment label and score
+                const sentiment = response.data[0].label;
+                const score = response.data[0].score;
+
+                // Hide loading and show result
+                document.getElementById('loading').classList.add('hidden');
+                
+                // Display the result with color coding
+                let sentimentColor = sentiment === 'POSITIVE' ? 'text-green-600' : 'text-red-600';
+                document.getElementById('result').innerHTML = 
+                    `<p class="${sentimentColor} text-2xl">Sentiment: <strong>${sentiment}</strong></p>
+                     <p class="text-lg">Confidence: <strong>${(score * 100).toFixed(2)}%</strong></p>`;
+            } catch (error) {
+                // Hide loading and show error message
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('errorMessage').classList.remove('hidden');
+                document.getElementById('errorMessage').innerText = "Error: Could not analyze the sentiment. Please check your network connection.";
+                console.error(error);
+            }
         }
     </script>
 

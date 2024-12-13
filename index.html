@@ -13,46 +13,51 @@
         
         <!-- Review Form -->
         <form id="reviewForm">
-            <textarea id="reviewText" name="review" placeholder="Write your review here..." rows="4" cols="50" class="p-2 border rounded-md"></textarea>
-            <button type="button" onclick="analyzeSentiment()" class="bg-blue-500 text-white p-2 mt-4 rounded-md">Analyze Sentiment</button>
+            <textarea id="reviewText" name="review" placeholder="Write your review here..." rows="4" cols="50"></textarea>
+            <button type="button" onclick="analyzeSentiment()" class="bg-blue-500 text-white p-2 mt-4">Analyze Sentiment</button>
         </form>
         
         <!-- Result Display -->
-        <div id="result" class="mt-4 text-center"></div>
+        <div id="result" class="mt-4"></div>
     </div>
 
     <script>
-        const hfToken = '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';  // Your Hugging Face API token
+        // Google Cloud API key
+        const apiKey = 'AIzaSyA03PqKeix_bLh-I-X5e-RCd4oJo3AoCI8';  
 
-        async function analyzeSentiment() {
+        function analyzeSentiment() {
             const review = document.getElementById('reviewText').value;  // Get the review text from the input
-    
+
             if (review === "") {
                 document.getElementById('result').innerHTML = "Please enter a review!";
                 return;
             }
-    
-            // Set up the request headers with your Hugging Face token
-            const headers = {
-                'Authorization': `Bearer ${hfToken}`,
-            };
-    
-            // Hugging Face API URL for sentiment analysis
-            const sentimentApiUrl = "https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english";
-    
-            try {
-                const response = await axios.post(sentimentApiUrl, { inputs: review }, { headers });
-                const sentiment = response.data[0].label;
-                const score = response.data[0].score;
 
-                // Display the result
-                document.getElementById('result').innerHTML = 
-                    `<p class="text-lg font-semibold">Sentiment: ${sentiment}</p>
-                    <p>Confidence Score: ${score.toFixed(4)}</p>`;
-            } catch (error) {
-                document.getElementById('result').innerHTML = "Error: Could not analyze the sentiment. Please try again.";
-                console.error(error);
-            }
+            // Set up the request payload for Google Cloud Natural Language API
+            const requestPayload = {
+                "document": {
+                    "type": "PLAIN_TEXT",
+                    "content": review
+                }
+            };
+
+            // Google Cloud API URL for Sentiment Analysis
+            const sentimentApiUrl = `https://language.googleapis.com/v1/documents:analyzeSentiment?key=${apiKey}`;
+
+            // Make the API request using axios
+            axios.post(sentimentApiUrl, requestPayload)
+                .then(response => {
+                    const sentimentScore = response.data.documentSentiment.score;
+                    const sentiment = sentimentScore >= 0 ? "Positive" : "Negative";
+
+                    // Display the result
+                    document.getElementById('result').innerHTML = 
+                        `Sentiment: ${sentiment} <br> Confidence Score: ${sentimentScore.toFixed(4)}`;
+                })
+                .catch(error => {
+                    document.getElementById('result').innerHTML = "Error: Could not analyze the sentiment.";
+                    console.error(error);
+                });
         }
     </script>
 </body>

@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sentiment Analysis using Hugging Face</title>
-  <!-- Tailwind CSS -->
+  <title>Q&A Page</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
@@ -15,60 +14,47 @@
 <body class="bg-gradient-to-br from-pink-300 via-white to-pink-300 h-screen flex items-center justify-center">
 
   <div class="w-full max-w-xl bg-white p-8 rounded-3xl shadow-2xl transform transition-all duration-500 hover:scale-105 hover:shadow-xl">
-    <h1 class="text-4xl font-extrabold text-center text-pink-600 mb-6 animate__animated animate__fadeIn">Sentiment Analysis</h1>
+    <h1 class="text-4xl font-extrabold text-center text-pink-600 mb-6">Interactive Q&A</h1>
 
-    <form id="sentimentForm" class="space-y-4">
-      <textarea id="inputText" class="w-full p-4 border-2 border-pink-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all duration-300" rows="4" placeholder="Type a sentence..."></textarea>
-      <button type="submit" class="w-full py-3 bg-pink-500 text-white font-semibold rounded-lg hover:bg-pink-600 transition-all duration-300 transform hover:scale-105">Analyze Sentiment</button>
+    <form id="questionForm" class="space-y-4">
+      <input id="questionInput" class="w-full p-4 border-2 border-pink-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all duration-300" type="text" placeholder="Ask a question...">
+      <button type="submit" class="w-full py-3 bg-pink-500 text-white font-semibold rounded-lg hover:bg-pink-600 transition-all duration-300 transform hover:scale-105">Get Answer</button>
     </form>
 
-    <div id="result" class="mt-6 text-center text-xl font-semibold text-gray-800"></div>
+    <div id="answer" class="mt-6 text-center text-xl font-semibold text-gray-800"></div>
   </div>
 
   <script>
-    // API token and endpoint
-    const API_TOKEN = "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";  // Your Hugging Face API token
-    const apiUrl = "https://api-inference.huggingface.co/models/distilbert-base-uncased-finetuned-sst-2-english";
+    // List of predefined questions and answers
+    const responses = {
+      "What is your name?": "I am a Sentiment Analysis AI!",
+      "How are you?": "I'm doing great, thank you for asking!",
+      "What is sentiment analysis?": "Sentiment analysis is the process of determining whether a piece of text is positive, negative, or neutral.",
+      "Tell me a joke": "Why don't scientists trust atoms? Because they make up everything!",
+      // Add more questions and answers here
+    };
 
-    // Function to call the Hugging Face API
-    async function analyzeSentiment() {
-      const text = document.getElementById("inputText").value;
-      const resultDiv = document.getElementById("result");
+    // Function to handle question input
+    async function handleQuestion(event) {
+      event.preventDefault();
 
-      if (!text.trim()) {
-        resultDiv.textContent = "Please enter some text.";
+      const question = document.getElementById("questionInput").value.trim();
+      const answerDiv = document.getElementById("answer");
+
+      if (!question) {
+        answerDiv.textContent = "Please ask a question!";
         return;
       }
 
-      // Show loading animation
-      resultDiv.innerHTML = `<div class="animate-spin border-4 border-t-4 border-pink-500 w-12 h-12 rounded-full mx-auto"></div>`;
+      // Check if the question exists in the predefined responses
+      const answer = responses[question] || "Sorry, I don't know the answer to that question.";
 
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${API_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ inputs: text }),
-      });
-
-      const result = await response.json();
-
-      // Hide loading animation and display result
-      if (response.ok) {
-        const sentiment = result[0].label;
-        const score = (result[0].score * 100).toFixed(2);
-        resultDiv.innerHTML = `Sentiment: <span class="font-bold text-pink-600">${sentiment}</span> (Confidence: ${score}%)`;
-      } else {
-        resultDiv.textContent = "Error: Unable to analyze sentiment.";
-      }
+      // Show the answer in the UI
+      answerDiv.textContent = answer;
     }
 
-    // Form submission handler
-    document.getElementById("sentimentForm").addEventListener("submit", function (event) {
-      event.preventDefault();
-      analyzeSentiment();
-    });
+    // Attach event listener to the form
+    document.getElementById("questionForm").addEventListener("submit", handleQuestion);
   </script>
   
 </body>

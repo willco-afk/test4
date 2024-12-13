@@ -5,48 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Review Sentiment Analysis</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> <!-- For HTTP Requests -->
 </head>
-<body class="bg-gray-100 font-sans flex justify-center items-center min-h-screen">
-    <div class="bg-white p-8 rounded-xl shadow-lg w-96">
-        <h1 class="text-3xl font-bold text-center text-pink-600 mb-6">Product Review Sentiment Analysis</h1>
-        <!-- Form for review submission -->
-        <form id="review-form" class="space-y-4">
-            <textarea id="review-input" name="review" placeholder="Write your review here..." rows="4" class="w-full p-3 border rounded-lg" required></textarea>
-            <button type="submit" class="w-full bg-pink-600 text-white py-2 rounded-lg">Analyze Sentiment</button>
+<body class="bg-pink-100">
+    <div class="container mx-auto p-4">
+        <h1 class="text-center text-3xl font-bold text-pink-600 mb-6">Product Review Sentiment Analysis</h1>
+        
+        <!-- Review Form -->
+        <form id="reviewForm">
+            <textarea id="reviewText" name="review" placeholder="Write your review here..." rows="4" cols="50"></textarea>
+            <button type="button" onclick="analyzeSentiment()" class="bg-blue-500 text-white p-2 mt-4">Analyze Sentiment</button>
         </form>
-        <div id="result" class="mt-6 text-center text-lg"></div>
+        
+        <!-- Result Display -->
+        <div id="result" class="mt-4"></div>
     </div>
 
     <script>
-        // Handle the form submission
-        document.getElementById('review-form').addEventListener('submit', async function(event) {
-            event.preventDefault();
-            
+        function analyzeSentiment() {
             // Get the review text
-            const reviewText = document.getElementById('review-input').value;
+            const review = document.getElementById('reviewText').value;
+
+            if (review === "") {
+                document.getElementById('result').innerHTML = "Please enter a review!";
+                return;
+            }
+
+            // Send the review to Hugging Face's sentiment analysis API
+            const sentimentApiUrl = "https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english";
             
-            // API request to Hugging Face
-            const response = await fetch('https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english', {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer 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', // Your Hugging Face API key
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ inputs: reviewText })
-            });
-            
-            const result = await response.json();
-            
-            // Display result
-            const sentiment = result[0].label;
-            const score = result[0].score;
-            const resultElement = document.getElementById('result');
-            
-            resultElement.innerHTML = `
-                <h2 class="font-bold text-lg">${sentiment} Review</h2>
-                <p>Confidence: ${(score * 100).toFixed(2)}%</p>
-            `;
-        });
+            // Make a request to Hugging Face API using axios
+            axios.post(sentimentApiUrl, { inputs: review })
+                .then(response => {
+                    const sentiment = response.data[0].label;
+                    const score = response.data[0].score;
+                    
+                    // Display the result
+                    document.getElementById('result').innerHTML = 
+                        `Sentiment: ${sentiment} <br> Confidence Score: ${score.toFixed(4)}`;
+                })
+                .catch(error => {
+                    document.getElementById('result').innerHTML = "Error: Could not analyze the sentiment.";
+                    console.error(error);
+                });
+        }
     </script>
 </body>
 </html>

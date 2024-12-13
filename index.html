@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentiment Analysis</title>
+    <title>Sentiment Analysis using Hugging Face</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Optional custom styles */
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
     </style>
     <script>
@@ -31,14 +30,28 @@
         }
     </script>
 </head>
-<body class="bg-white text-gray-800">
-    <div class="min-h-screen flex flex-col items-center justify-center space-y-6">
-        <h1 class="text-4xl font-semibold text-pink-500">Sentiment Analysis using Hugging Face</h1>
-        <div class="w-full max-w-md p-6 bg-white shadow-xl rounded-xl border border-pink-200">
-            <input type="text" id="input-text" placeholder="Enter text" class="w-full p-3 mb-4 border border-pink-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500"/>
-            <button onclick="analyzeSentiment()" class="w-full bg-pink-500 text-white py-2 rounded-xl hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-300">Analyze Sentiment</button>
+<body class="bg-gradient-to-br from-pink-300 via-white to-pink-200 min-h-screen flex items-center justify-center">
+
+    <!-- Main content container -->
+    <div class="w-full max-w-lg bg-white p-8 rounded-xl shadow-xl border-2 border-pink-400">
+        <!-- Header -->
+        <h1 class="text-center text-4xl font-extrabold text-pink-600 mb-6">
+            Sentiment Analysis
+        </h1>
+
+        <!-- Input field and Button -->
+        <div class="space-y-6">
+            <input type="text" id="input-text" placeholder="Enter your text here" class="w-full p-4 border-2 border-pink-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500 text-lg" />
+            <button onclick="analyzeSentiment()" class="w-full py-3 bg-pink-500 text-white text-lg font-semibold rounded-xl transition duration-300 hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-300">
+                Analyze Sentiment
+            </button>
         </div>
-        <p id="result" class="text-lg font-semibold text-pink-700"></p>
+
+        <!-- Result area -->
+        <div id="result" class="mt-6 text-center text-2xl font-semibold text-pink-700">
+            <!-- Result will be displayed here -->
+        </div>
     </div>
+
 </body>
 </html>

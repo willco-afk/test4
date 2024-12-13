@@ -3,55 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentiment Analysis using Hugging Face</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-    </style>
-    <script>
-        async function analyzeSentiment() {
-            const text = document.getElementById("input-text").value;
-            const API_TOKEN = "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"; // Your Hugging Face token
-            const response = await fetch("https://api-inference.huggingface.co/models/distilbert-base-uncased-finetuned-sst-2-english", {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${API_TOKEN}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ "inputs": text })
-            });
-
-            const result = await response.json();
-            const sentiment = result[0][0].label;
-            document.getElementById("result").innerText = `Sentiment: ${sentiment}`;
-        }
-    </script>
+    <title>Sentiment Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script> <!-- Link to Tailwind CSS CDN -->
+    <link rel="stylesheet" href="static/styles.css"> <!-- Optional Custom Styles if needed -->
 </head>
-<body class="bg-gradient-to-br from-pink-300 via-white to-pink-200 min-h-screen flex items-center justify-center">
-
-    <!-- Main content container -->
-    <div class="w-full max-w-lg bg-white p-8 rounded-xl shadow-xl border-2 border-pink-400">
-        <!-- Header -->
-        <h1 class="text-center text-4xl font-extrabold text-pink-600 mb-6">
-            Sentiment Analysis
-        </h1>
-
-        <!-- Input field and Button -->
-        <div class="space-y-6">
-            <input type="text" id="input-text" placeholder="Enter your text here" class="w-full p-4 border-2 border-pink-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500 text-lg" />
-            <button onclick="analyzeSentiment()" class="w-full py-3 bg-pink-500 text-white text-lg font-semibold rounded-xl transition duration-300 hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-300">
-                Analyze Sentiment
-            </button>
+<body class="bg-gradient-to-b from-pink-50 to-white min-h-screen flex items-center justify-center">
+    <!-- Navbar -->
+    <nav class="bg-gradient-to-r from-pink-500 to-purple-600 p-4 fixed w-full top-0 z-10">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <h1 class="text-white text-2xl font-semibold">Sentiment Analysis</h1>
         </div>
+    </nav>
 
-        <!-- Result area -->
-        <div id="result" class="mt-6 text-center text-2xl font-semibold text-pink-700">
-            <!-- Result will be displayed here -->
+    <!-- Main Content Container -->
+    <div class="bg-white rounded-3xl p-8 shadow-lg w-full max-w-lg mt-24">
+        <h2 class="text-3xl font-semibold text-center text-pink-600 mb-6">Analyze Sentiment</h2>
+        
+        <textarea id="textInput" class="w-full h-32 p-4 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500" placeholder="Enter text for sentiment analysis..."></textarea>
+        
+        <button id="analyzeButton" class="w-full mt-4 p-3 bg-gradient-to-r from-pink-500 to-pink-700 text-white rounded-lg shadow-lg hover:bg-pink-600 transition-all duration-300">
+            Analyze Sentiment
+        </button>
+        
+        <!-- Loading Spinner -->
+        <div id="loading" class="spinner hidden mx-auto mt-4"></div>
+        
+        <!-- Result Area -->
+        <div id="result" class="mt-4 text-center text-xl text-pink-700 font-bold hidden">
+            Sentiment: <span id="sentimentLabel">POSITIVE</span>
         </div>
     </div>
 
+    <script src="static/app.js"></script> <!-- Link to your JavaScript file -->
 </body>
 </html>

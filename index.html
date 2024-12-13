@@ -1,39 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentiment Analysis</title>
-    <script src="https://cdn.tailwindcss.com"></script> <!-- Link to Tailwind CSS CDN -->
-    <link rel="stylesheet" href="static/styles.css"> <!-- Optional Custom Styles if needed -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sentiment Analysis using Hugging Face</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-b from-pink-50 to-white min-h-screen flex items-center justify-center">
-    <!-- Navbar -->
-    <nav class="bg-gradient-to-r from-pink-500 to-purple-600 p-4 fixed w-full top-0 z-10">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <h1 class="text-white text-2xl font-semibold">Sentiment Analysis</h1>
-        </div>
-    </nav>
+<body class="bg-gradient-to-br from-pink-300 via-white to-pink-300 h-screen flex items-center justify-center">
 
-    <!-- Main Content Container -->
-    <div class="bg-white rounded-3xl p-8 shadow-lg w-full max-w-lg mt-24">
-        <h2 class="text-3xl font-semibold text-center text-pink-600 mb-6">Analyze Sentiment</h2>
-        
-        <textarea id="textInput" class="w-full h-32 p-4 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500" placeholder="Enter text for sentiment analysis..."></textarea>
-        
-        <button id="analyzeButton" class="w-full mt-4 p-3 bg-gradient-to-r from-pink-500 to-pink-700 text-white rounded-lg shadow-lg hover:bg-pink-600 transition-all duration-300">
-            Analyze Sentiment
-        </button>
-        
-        <!-- Loading Spinner -->
-        <div id="loading" class="spinner hidden mx-auto mt-4"></div>
-        
-        <!-- Result Area -->
-        <div id="result" class="mt-4 text-center text-xl text-pink-700 font-bold hidden">
-            Sentiment: <span id="sentimentLabel">POSITIVE</span>
-        </div>
-    </div>
+  <div class="w-full max-w-xl bg-white p-8 rounded-3xl shadow-2xl transform transition-all duration-500 hover:scale-105 hover:shadow-xl">
+    <h1 class="text-4xl font-extrabold text-center text-pink-600 mb-6 animate__animated animate__fadeIn">Sentiment Analysis</h1>
 
-    <script src="static/app.js"></script> <!-- Link to your JavaScript file -->
+    <form id="sentimentForm" class="space-y-4">
+      <textarea id="inputText" class="w-full p-4 border-2 border-pink-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all duration-300" rows="4" placeholder="Type a sentence..."></textarea>
+      <button type="submit" class="w-full py-3 bg-pink-500 text-white font-semibold rounded-lg hover:bg-pink-600 transition-all duration-300 transform hover:scale-105">Analyze Sentiment</button>
+    </form>
+
+    <div id="result" class="mt-6 text-center text-xl font-semibold text-gray-800"></div>
+  </div>
+
+  <script>
+    // API token and endpoint
+    const API_TOKEN = "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";  // Your Hugging Face API token
+    const apiUrl = "https://api-inference.huggingface.co/models/distilbert-base-uncased-finetuned-sst-2-english";
+
+    // Function to call the Hugging Face API
+    async function analyzeSentiment() {
+      const text = document.getElementById("inputText").value;
+      const resultDiv = document.getElementById("result");
+
+      if (!text.trim()) {
+        resultDiv.textContent = "Please enter some text.";
+        return;
+      }
+
+      // Show loading animation
+      resultDiv.innerHTML = `<div class="animate-spin border-4 border-t-4 border-pink-500 w-12 h-12 rounded-full mx-auto"></div>`;
+
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${API_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ inputs: text }),
+      });
+
+      const result = await response.json();
+
+      // Hide loading animation and display result
+      if (response.ok) {
+        const sentiment = result[0].label;
+        const score = (result[0].score * 100).toFixed(2);
+        resultDiv.innerHTML = `Sentiment: <span class="font-bold text-pink-600">${sentiment}</span> (Confidence: ${score}%)`;
+      } else {
+        resultDiv.textContent = "Error: Unable to analyze sentiment.";
+      }
+    }
+
+    // Form submission handler
+    document.getElementById("sentimentForm").addEventListener("submit", function (event) {
+      event.preventDefault();
+      analyzeSentiment();
+    });
+  </script>
+  
 </body>
 </html>

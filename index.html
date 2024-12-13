@@ -13,19 +13,19 @@
         
         <!-- Review Form -->
         <form id="reviewForm">
-            <textarea id="reviewText" name="review" placeholder="Write your review here..." rows="4" cols="50"></textarea>
-            <button type="button" onclick="analyzeSentiment()" class="bg-blue-500 text-white p-2 mt-4">Analyze Sentiment</button>
+            <textarea id="reviewText" name="review" placeholder="Write your review here..." rows="4" cols="50" class="w-full p-2 border border-gray-300 rounded-md"></textarea>
+            <button type="button" onclick="analyzeSentiment()" class="bg-blue-500 text-white p-2 mt-4 rounded-md">Analyze Sentiment</button>
         </form>
         
         <!-- Result Display -->
-        <div id="result" class="mt-4"></div>
+        <div id="result" class="mt-4 text-center text-lg font-semibold"></div>
     </div>
 
     <script>
         const hfToken = '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';  // Your Hugging Face API token
     
         function analyzeSentiment() {
-            const review = document.getElementById('reviewText').value;  // Get the review text from the input
+            const review = document.getElementById('reviewText').value.trim();  // Get the review text from the input
     
             if (review === "") {
                 document.getElementById('result').innerHTML = "Please enter a review!";
@@ -51,8 +51,8 @@
                         `Sentiment: ${sentiment} <br> Confidence Score: ${score.toFixed(4)}`;
                 })
                 .catch(error => {
-                    document.getElementById('result').innerHTML = "Error: Could not analyze the sentiment.";
                     console.error(error);
+                    document.getElementById('result').innerHTML = "Error: Could not analyze the sentiment. Please check your network connection.";
                 });
         }
     </script>
